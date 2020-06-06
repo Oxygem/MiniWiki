@@ -1,0 +1,40 @@
+import json
+
+import click
+
+from miniwiki.app import make_app
+from miniwiki.config import load_config
+from miniwiki.models import db, Page
+
+
+def import_or_export(import_filename):
+    with open(import_filename, 'r') as f:
+        data = json.load(f)
+
+    for page_data in data:
+        page = Page()
+        for key, value in page_data.items():
+            setattr(page, key, value)
+
+        db.session.add(page)
+    db.session.commit()
+
+
+@click.command()
+@click.option('import_filename', '--import', type=click.Path(exists=True))
+@click.option('--initdb', is_flag=True, default=False)
+@click.argument('config_filename', type=click.Path(exists=True))
+def start_miniwiki(config_filename, import_filename, initdb):
+    config = load_config(config_filename)
+    app = make_app(config)
+
+    if initdb:
+        with app.app_context():
+            db.create_all()
+        click.echo('Database initialized!')
+        return
+
+    if import_filename:
+        return import_or_export(import_filename)
+
+    app.run()

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header_links %}
+    {% if is_logged_in %}
+        <a href="{{ page_url }}?edit">Edit Page</a>
+        {% if logout_url %}
+            <a href="{{ logout_url }}">Logout</a>
+        {% endif %}
+    {% elif login_url %}
+        <a href="{{ login_url }}">Login</a>
+    {% endif %}
+{% endblock %}
+
+{% block contents %}
+    <section id="page">
+        {% if page %}
+            {% set toc, html = page.render_toc_and_content() %}
+
+            <h1>{{ page.title }}</h1>
+            {% set sidebar = page.render_sidebar() %}
+            {% set is_sidebar = False %}
+
+            {% if sidebar or page.sidebar_toc %}
+                {% set is_sidebar = True %}
+                <div id="sidebar">
+                    {% if page.sidebar_toc %}{{ toc|safe }}{% endif %}
+                    {{ sidebar|safe }}
+                </div>
+            {% endif %}
+
+            <div id="content" {% if is_sidebar %} class="sidebar"{% endif %}>{{ html|safe }}</div>
+        {% else %}
+            <p>This page (<code>{{ path_and_name }}</code>) does not exist, yet.</p>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -6,6 +6,8 @@ INSTALL_REQUIRES = [
     'flask-sqlalchemy==2.4.3',
     'sqlalchemy==1.3.7',
 
+    'bcrypt==3.1.7',
+
     'click==7.1.2',
 
     'markdown==2.6.9',

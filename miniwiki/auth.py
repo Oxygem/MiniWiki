@@ -1,4 +1,9 @@
+import hmac
+
+from bcrypt import hashpw
 from flask import abort, redirect, render_template, request, session
+
+DEFAULT_BCRYPT_ROUNDS = 12
 
 
 class AnonymousAuthBackend(object):
@@ -14,8 +19,19 @@ class AnonymousAuthBackend(object):
 
 
 class SimpleAuthBackend(AnonymousAuthBackend):
+    '''
+    A simple hard-coded username : password auth backend. Passwords hashed using bcrpyt, to create
+    a new user, generate the password by:
+
+        hashpw(b'PASSWORD', gensalt(N_BCRYPT_ROUNDS))
+    '''
+
     def __init__(self, config):
-        self.users = config['auth_backend_settings'].get('users')
+        auth_settings = config['auth_backend_settings']
+
+        self.users = auth_settings.get('users')
+        self.bcrypt_rounds = auth_settings.get('bcrypt_rounds', DEFAULT_BCRYPT_ROUNDS)
+
         if not self.users:
             raise ValueError(
                 'Must provide `config.auth_backend_settings.users` with `SimpleAuthBackend`!',
@@ -29,14 +45,24 @@ class SimpleAuthBackend(AnonymousAuthBackend):
 
     def post_login(self):
         username = request.form['username']
-        password = request.form['password']
 
-        if (username, password) not in self.users:
+        if username not in self.users:
+            abort(401, 'Invalid username or password')
+
+        password = request.form['password'].encode('utf-8')
+        hashed = self.users[username]
+
+        if not hmac.compare_digest(
+            hashpw(password, hashed),
+            hashed,
+        ):
             abort(401, 'Invalid username or password')
 
         session['logged_in'] = True
+        session['logged_in_username'] = username
         return redirect('/')
 
     def get_logout(self):
         session.pop('logged_in', None)
+        session.pop('logged_in_username', None)
         return redirect('/')

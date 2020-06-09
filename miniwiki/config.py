@@ -22,7 +22,7 @@ def get_default_config():
         'debug': False,
         'secret_key': f'{uuid4()}',
         'name': 'MiniWiki',
-        'database': 'sqlite:///database.db',
+        'database': 'sqlite:///miniwiki.db',
         'template_folder': None,
         'static_folder': None,
         'auth_backend': 'miniwiki.auth.AnonymousAuthBackend',

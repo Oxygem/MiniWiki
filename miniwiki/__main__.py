@@ -7,7 +7,7 @@ from miniwiki.config import load_config
 from miniwiki.models import db, Page
 
 
-def import_or_export(import_filename):
+def import_pages(import_filename):
     with open(import_filename, 'r') as f:
         data = json.load(f)
 
@@ -24,7 +24,7 @@ def import_or_export(import_filename):
 @click.option('import_filename', '--import', type=click.Path(exists=True))
 @click.option('--initdb', is_flag=True, default=False)
 @click.argument('config_filename', type=click.Path(exists=True))
-def start_miniwiki(config_filename, import_filename, initdb):
+def start_miniwiki(import_filename, initdb, config_filename):
     config = load_config(config_filename)
     app = make_app(config)
 
@@ -35,6 +35,6 @@ def start_miniwiki(config_filename, import_filename, initdb):
         return
 
     if import_filename:
-        return import_or_export(import_filename)
+        return import_pages(import_filename)
 
     app.run()

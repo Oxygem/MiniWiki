@@ -2,6 +2,8 @@ import json
 
 import click
 
+from cheroot import wsgi
+
 from miniwiki.app import make_app
 from miniwiki.config import load_config
 from miniwiki.models import db, Page
@@ -37,4 +39,8 @@ def start_miniwiki(import_filename, initdb, config_filename):
     if import_filename:
         return import_pages(import_filename)
 
-    app.run()
+    if config['debug']:
+        app.run()
+    else:
+        server = wsgi.Server(('0.0.0.0', 5000), app)
+        server.start()

@@ -3,8 +3,6 @@ import hmac
 from bcrypt import hashpw
 from flask import abort, redirect, render_template, request, session
 
-DEFAULT_BCRYPT_ROUNDS = 12
-
 
 class AnonymousAuthBackend(object):
     get_login = False
@@ -30,7 +28,6 @@ class SimpleAuthBackend(AnonymousAuthBackend):
         auth_settings = config['auth_backend_settings']
 
         self.users = auth_settings.get('users')
-        self.bcrypt_rounds = auth_settings.get('bcrypt_rounds', DEFAULT_BCRYPT_ROUNDS)
 
         if not self.users:
             raise ValueError(

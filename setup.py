@@ -35,6 +35,7 @@ if __name__ == '__main__':
                 'miniwiki=miniwiki.__main__:start_miniwiki',
             ),
         },
+        python_requires='>=3.6',
         install_requires=INSTALL_REQUIRES,
         extras_require={
             'dev': DEV_REQUIRES,

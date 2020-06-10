@@ -16,6 +16,11 @@ INSTALL_REQUIRES = [
     'mdx-linkify==1.0',
 ]
 
+DEV_REQUIRES = [
+    'wheel',
+    'twine',
+]
+
 
 if __name__ == '__main__':
     setup(
@@ -31,5 +36,8 @@ if __name__ == '__main__':
             ),
         },
         install_requires=INSTALL_REQUIRES,
+        extras_require={
+            'dev': DEV_REQUIRES,
+        },
         include_package_data=True,
     )

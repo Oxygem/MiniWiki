@@ -24,7 +24,7 @@ DEV_REQUIRES = [
 
 if __name__ == '__main__':
     setup(
-        version='0.1',
+        version='0.2',
         name='MiniWiki',
         author='Nick, Oxygem',
         author_email='hello@oxygem.com',

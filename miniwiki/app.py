@@ -4,6 +4,7 @@ from time import time
 
 from flask import abort, Flask, redirect, render_template, request, url_for
 from jinja2 import FileSystemLoader
+from werkzeug.exceptions import HTTPException
 
 from miniwiki.models import db, Page
 from miniwiki.util import get_path_and_name
@@ -117,5 +118,17 @@ def make_app(config):
         db.session.commit()
 
         return redirect(url_for('get_or_edit_page', location=location))
+
+    # Error view
+    #
+
+    @app.errorhandler(HTTPException)
+    def get_error(e):
+        return render_template(
+            'error.html',
+            status=e.code,
+            name=e.name,
+            description=e.description,
+        ), e.code
 
     return app

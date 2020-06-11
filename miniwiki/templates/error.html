@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header_links %}
+    {% if is_logged_in %}
+        {% if logout_url %}
+            <a href="{{ logout_url }}">Logout</a>
+        {% endif %}
+    {% elif login_url %}
+        <a href="{{ login_url }}">Login</a>
+    {% endif %}
+{% endblock %}
+
+{% block contents %}
+    <section id="page">
+        <h1>{{ status }}: {{ name }}</h1>
+        <div id="content">
+            {{ description }}
+        </div>
+    </section>
+{% endblock %}

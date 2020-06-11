@@ -1,9 +1,11 @@
-# v0.2
+# v0.3
+
+First working version; fix missing templates in package.
 
 + Add proper error pages
 + Encode hashed passwords if `str` objects
 
-# v0.1
+# v0.1 / v0.2
 
 Initial version! Features:
 

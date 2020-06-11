@@ -1,3 +1,7 @@
+# v0.4
+
++ Add `--host` and `--port` CLI arguments
+
 # v0.3
 
 First working version; fix missing templates in package.

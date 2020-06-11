@@ -1,2 +1,2 @@
 include README.md LICENSE.md CHANGELOG.md
-recursive-include miniwiki/templates/*
+recursive-include miniwiki/templates/ *

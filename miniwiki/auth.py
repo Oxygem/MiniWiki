@@ -46,8 +46,10 @@ class SimpleAuthBackend(AnonymousAuthBackend):
         if username not in self.users:
             abort(401, 'Invalid username or password')
 
-        password = request.form['password'].encode('utf-8')
+        password = request.form['password'].encode()
         hashed = self.users[username]
+        if isinstance(hashed, str):
+            hashed = hashed.encode()
 
         if not hmac.compare_digest(
             hashpw(password, hashed),

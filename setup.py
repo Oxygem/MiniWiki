@@ -21,6 +21,10 @@ DEV_REQUIRES = [
     'twine',
 ]
 
+MEMCACHE_REQUIRES = [
+    'pymemcache==3.2.0',
+]
+
 
 if __name__ == '__main__':
     setup(
@@ -39,6 +43,7 @@ if __name__ == '__main__':
         install_requires=INSTALL_REQUIRES,
         extras_require={
             'dev': DEV_REQUIRES,
+            'memcache': MEMCACHE_REQUIRES,
         },
         include_package_data=True,
     )

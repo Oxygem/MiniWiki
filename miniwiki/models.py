@@ -107,7 +107,8 @@ class PageMixin(object):
 
             page = Page.query.get((page_path, page_name))
             if page:
-                title = page.title
+                if title is None:
+                    title = page.title
                 url = page.url
 
             if title is None:

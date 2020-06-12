@@ -39,7 +39,7 @@ def make_app(config):
 
     db.init_app(app)
 
-    # Auth?
+    # Auth
     #
 
     auth_module, auth_cls = config['auth_backend'].rsplit('.', 1)
@@ -56,6 +56,14 @@ def make_app(config):
     if auth.get_logout:
         app.route('/logout', methods=('GET',))(auth.get_logout)
 
+    # Cache
+    #
+
+    cache_module, cache_cls = config['cache_backend'].rsplit('.', 1)
+    cache_module = import_module(cache_module)
+    cache_cls = getattr(cache_module, cache_cls)
+    setattr(Page, 'cache', cache_cls(config))
+
     # Wiki view
     #
 
@@ -69,6 +77,7 @@ def make_app(config):
 
         path_and_name = f'/{location}'
         page_path, page_name = get_path_and_name(path_and_name)
+        page_location = path.join(page_path, page_name)
 
         page = Page.query.get((page_path, page_name))
         status = 200 if page else 404
@@ -88,7 +97,7 @@ def make_app(config):
                 page=page,
                 page_path=page_path,
                 page_name=page_name,
-                page_location=path.join(page_path, page_name),
+                page_location=page_location,
                 path_locations=split_path_locations(path_and_name),
                 exists=page is not None,
                 page_url=url_for('get_or_edit_page', location=location),

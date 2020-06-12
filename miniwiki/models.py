@@ -33,6 +33,10 @@ class PageMixin(object):
     def url(self):
         return url_for('get_or_edit_page', location=path.join(self.path, self.name))
 
+    @property
+    def cache_key(self):
+        return f'{self}'
+
     def __str__(self):
         return path.join(self.path, self.name)
 
@@ -41,9 +45,15 @@ class PageMixin(object):
             setattr(self, key, value)
 
     def render_toc_and_content(self):
+        cached = self.cache.get(self.cache_key)
+        if cached:
+            return cached
+
         toc, html = markdownify(self.content)
         html = self.add_wiki_indexes(html)
         html = self.add_wiki_links(html)
+
+        self.cache.set(self.cache_key, (toc, html))
         return toc, html
 
     def render_sidebar(self):

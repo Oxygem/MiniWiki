@@ -84,8 +84,9 @@ def make_app(config):
 
         if request.method == 'GET':
             template = 'page.html'
+            is_edit = request.args.get('edit') == ''
 
-            if request.args.get('edit') == '':
+            if is_edit:
                 if auth.is_logged_in():
                     template = 'edit_page.html'
                 else:
@@ -98,11 +99,18 @@ def make_app(config):
             }
 
             if page:
-                page_vars['sidebar'] = page.render_sidebar()
-                (toc, html), cached = page.render_toc_and_content()
+                try:
+                    (toc, html), cached = page.render_toc_and_content(do_redirects=not is_edit)
+                except page.PageRedirectError as e:
+                    return redirect(
+                        url_for('get_or_edit_page', location=e.location)
+                        + f'?redirected_from={page_location}',
+                    )
+
                 page_vars['page_cached'] = cached
                 page_vars['page_toc'] = toc
                 page_vars['page_content'] = html
+                page_vars['page_sidebar'] = page.render_sidebar()
 
             return render_template(
                 template,

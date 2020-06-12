@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from miniwiki.util import get_path_and_name, markdownify
 
+REDIRECT_REGEX = re.compile(r'\[redirect\:([\/\ \w]+)\]')
 INDEX_REGEX = re.compile(r'\[index\:([\/\ \w]*)\]')
 LINK_REGEX = re.compile(r'\[\[([\/\|\ \w]+)\]\]')
 
@@ -29,6 +30,10 @@ class PageMixin(object):
     description = db.Column(db.String(300), nullable=True)
     keywords = db.Column(db.String(300), nullable=True)
 
+    class PageRedirectError(Exception):
+        def __init__(self, location):
+            self.location = location
+
     @property
     def url(self):
         return url_for('get_or_edit_page', location=path.join(self.path, self.name))
@@ -44,10 +49,13 @@ class PageMixin(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def render_toc_and_content(self):
+    def render_toc_and_content(self, do_redirects=True):
         cached = self.cache.get(self.cache_key)
         if cached:
             return cached, True
+
+        if do_redirects:
+            self.find_raise_redirect(self.content)
 
         toc, html = markdownify(self.content)
         html = self.add_wiki_indexes(html)
@@ -69,6 +77,12 @@ class PageMixin(object):
             description=self.description,
             keywords=self.keywords,
         )
+
+    def find_raise_redirect(self, html):
+        match = REDIRECT_REGEX.search(html)
+        if match:
+            location = match.group(1)
+            raise self.PageRedirectError(location=location)
 
     def add_wiki_indexes(self, html):
         def make_index(value):

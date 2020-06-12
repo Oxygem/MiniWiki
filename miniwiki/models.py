@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from miniwiki.util import get_path_and_name, markdownify
 
-INDEX_REGEX = re.compile(r'\[index\:([\/\ \w]+)\]')
+INDEX_REGEX = re.compile(r'\[index\:([\/\ \w]*)\]')
 LINK_REGEX = re.compile(r'\[\[([\/\|\ \w]+)\]\]')
 
 
@@ -63,6 +63,8 @@ class PageMixin(object):
     def add_wiki_indexes(self, html):
         def make_index(value):
             page_path = value.group(1)
+            if not page_path:
+                page_path = path.join(self.path, self.name)
             pages = Page.query.filter_by(path=page_path)
             return render_template('macro/index_links.html', pages=pages)
 

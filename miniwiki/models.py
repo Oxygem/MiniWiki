@@ -72,11 +72,24 @@ class PageMixin(object):
 
     def add_wiki_links(self, html):
         def make_link(value):
+            value = value.group(1)
+            title = None
+
+            if '|' in value:
+                title, value = value.split('|', 1)
+
             page_path, page_name = get_path_and_name(value)
+            url = path.join(page_path, page_name)
+
             page = Page.query.get((page_path, page_name))
             if page:
-                return f'<a href="{page.url}">{page.title}</a>'
-            return f'<a href="{page_path}{page_name}">{page_path}{page_name}</a>'
+                title = page.title
+                url = page.url
+
+            if title is None:
+                title = url
+
+            return f'<a href="{url}">{title}</a>'
 
         return re.sub(LINK_REGEX, make_link, html)
 

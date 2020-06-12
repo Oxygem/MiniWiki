@@ -20,21 +20,15 @@
 {% block contents %}
     <section id="page">
         {% if page %}
-            {% set toc, html = page.render_toc_and_content() %}
-
             <h1>{{ page.title }}</h1>
-            {% set sidebar = page.render_sidebar() %}
-            {% set is_sidebar = False %}
-
             {% if sidebar or page.sidebar_toc %}
-                {% set is_sidebar = True %}
                 <div id="sidebar">
-                    {% if page.sidebar_toc %}{{ toc|safe }}{% endif %}
-                    {{ sidebar|safe }}
+                    {% if page.sidebar_toc %}{{ page_toc|safe }}{% endif %}
+                    {{ page_sidebar|safe }}
                 </div>
             {% endif %}
 
-            <div id="content" {% if is_sidebar %} class="sidebar"{% endif %}>{{ html|safe }}</div>
+            <div id="content" {% if page_sidebar or page.sidebar_toc %} class="sidebar"{% endif %}>{{ page_content|safe }}</div>
         {% else %}
             <p>This page (<code>{{ page_location }}</code>) does not exist, yet.</p>
         {% endif %}

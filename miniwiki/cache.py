@@ -1,5 +1,5 @@
 from pymemcache import serde
-from pymemcache.client.base import Client
+from pymemcache.client.base import PooledClient
 
 
 class NoCacheBackend(object):
@@ -26,8 +26,13 @@ class PymemcacheCacheBackend(NoCacheBackend):
                 ' with `PymemcacheCacheBackend!'
             ))
 
-        self.client = Client(
-            (host, port),
+        self.host = host
+        self.port = port
+        self._make_client()
+
+    def _make_client(self):
+        self.client = PooledClient(
+            (self.host, self.port),
             serde=serde.pickle_serde,
         )
 
@@ -35,10 +40,16 @@ class PymemcacheCacheBackend(NoCacheBackend):
         try:
             return self.client.get(key)
         except Exception as e:
-            print(f'FAILED CACHE GET: {e}')
+            print(f'FAILED CACHE GET: {e.__class__.__name__}({e.args})')
 
     def set(self, key, value):
         try:
             return self.client.set(key, value)
         except Exception as e:
-            print(f'FAILED CACHE SET: {e}')
+            print(f'FAILED CACHE SET: {e.__class__.__name__}({e.args})')
+
+    def delete(self, key):
+        try:
+            return self.client.delete(key)
+        except Exception as e:
+            print(f'FAILED CACHE DELETE: {e.__class__.__name__}({e.args})')

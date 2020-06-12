@@ -91,6 +91,19 @@ def make_app(config):
                 else:
                     abort(403)
 
+            page_vars = {
+                'page_toc': None,
+                'page_sidebar': None,
+                'page_content': None,
+            }
+
+            if page:
+                page_vars['sidebar'] = page.render_sidebar()
+                (toc, html), cached = page.render_toc_and_content()
+                page_vars['page_cached'] = cached
+                page_vars['page_toc'] = toc
+                page_vars['page_content'] = html
+
             return render_template(
                 template,
                 status=status,
@@ -106,6 +119,7 @@ def make_app(config):
                 is_logged_in=auth.is_logged_in(),
                 logout_url=url_for('get_logout') if auth.get_logout else None,
                 login_url=url_for('get_login') if auth.get_login else None,
+                **page_vars,
             ), status
 
         if page:

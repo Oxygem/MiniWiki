@@ -47,14 +47,14 @@ class PageMixin(object):
     def render_toc_and_content(self):
         cached = self.cache.get(self.cache_key)
         if cached:
-            return cached
+            return cached, True
 
         toc, html = markdownify(self.content)
         html = self.add_wiki_indexes(html)
         html = self.add_wiki_links(html)
 
         self.cache.set(self.cache_key, (toc, html))
-        return toc, html
+        return (toc, html), False
 
     def render_sidebar(self):
         if not self.sidebar:
@@ -109,6 +109,10 @@ class Page(db.Model, PageMixin):
 
     path = db.Column(db.String(300, collation='NOCASE'), primary_key=True)
     name = db.Column(db.String(300, collation='NOCASE'), primary_key=True)
+
+    def update(self, *args, **kwargs):
+        super(Page, self).update(*args, **kwargs)
+        self.cache.delete(self.cache_key)
 
     def create_page_log(self):
         columns = self.__table__.columns.keys()

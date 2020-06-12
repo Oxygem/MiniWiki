@@ -11,6 +11,12 @@
     {% endif %}
 {% endblock %}
 
+{% block location_links %}
+    {% for path, name in path_locations %}
+        <a href="{{ path }}">{{ name }}</a>
+    {% endfor %}
+{% endblock %}
+
 {% block contents %}
     <section id="page">
         {% if page %}
@@ -30,7 +36,7 @@
 
             <div id="content" {% if is_sidebar %} class="sidebar"{% endif %}>{{ html|safe }}</div>
         {% else %}
-            <p>This page (<code>{{ path_and_name }}</code>) does not exist, yet.</p>
+            <p>This page (<code>{{ page_location }}</code>) does not exist, yet.</p>
         {% endif %}
     </section>
 {% endblock %}

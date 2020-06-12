@@ -7,7 +7,7 @@ from jinja2 import FileSystemLoader
 from werkzeug.exceptions import HTTPException
 
 from miniwiki.models import db, Page
-from miniwiki.util import get_path_and_name
+from miniwiki.util import get_path_and_name, split_path_locations
 
 
 def make_app(config):
@@ -87,7 +87,9 @@ def make_app(config):
                 status=status,
                 page=page,
                 page_path=page_path,
-                path_and_name=path_and_name,
+                page_name=page_name,
+                page_location=path.join(page_path, page_name),
+                path_locations=split_path_locations(path_and_name),
                 exists=page is not None,
                 page_url=url_for('get_or_edit_page', location=location),
                 wiki_name=wiki_name,

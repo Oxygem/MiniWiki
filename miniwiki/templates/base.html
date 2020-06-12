@@ -4,6 +4,8 @@
     <title>{% if page %}{{ page.title }} &mdash; {% endif %}{{ wiki_name }}</title>
     {% if page %}{{ page.render_meta()|safe }}{% endif %}
 
+    <link rel="canonical" href="{{ page_location }}" />
+
     <style type="text/css">
         body {
             margin: 30px 10%;
@@ -31,6 +33,7 @@
         <a href="/">Home</a>
         {% block header_links %}{% endblock %}
     </header>
+    <nav>Breadcrumb: {% block location_links %}{% endblock %}</nav>
     {% block contents %}{% endblock %}
 </body>
 </html>

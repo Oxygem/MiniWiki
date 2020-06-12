@@ -100,7 +100,10 @@ def make_app(config):
 
             if page:
                 try:
-                    (toc, html), cached = page.render_toc_and_content(do_redirects=not is_edit)
+                    (toc, html), cached = page.render_toc_and_content(
+                        do_redirects=not is_edit,
+                        use_cache=request.args.get('uncached') != '',
+                    )
                 except page.PageRedirectError as e:
                     return redirect(
                         url_for('get_or_edit_page', location=e.location)

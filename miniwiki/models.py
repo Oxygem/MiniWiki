@@ -49,9 +49,9 @@ class PageMixin(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def render_toc_and_content(self, do_redirects=True):
+    def render_toc_and_content(self, do_redirects=True, use_cache=True):
         cached = self.cache.get(self.cache_key)
-        if cached:
+        if use_cache and cached:
             return cached, True
 
         if do_redirects:
@@ -61,7 +61,8 @@ class PageMixin(object):
         html = self.add_wiki_indexes(html)
         html = self.add_wiki_links(html)
 
-        self.cache.set(self.cache_key, (toc, html))
+        if use_cache:
+            self.cache.set(self.cache_key, (toc, html))
         return (toc, html), False
 
     def render_sidebar(self):

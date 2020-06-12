@@ -35,5 +35,9 @@
     </header>
     <nav>Breadcrumb: {% block location_links %}{% endblock %}</nav>
     {% block contents %}{% endblock %}
+    <footer>
+        Page generated in {{ page_generate_time }}s.
+        {% if page_cached %} Page content cached.{% endif %}
+    </footer>
 </body>
 </html>

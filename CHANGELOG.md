@@ -1,4 +1,10 @@
-# 0.5
+# v0.6
+
++ Add `?uncached` option to view page with caching disabled
++ Add `--export` CLI command
++ Fix not using the user title when provided on internal links
+
+# v0.5
 
 + Add page redirects (`[redirect:/Another]`)
 + Actually implement named page link (`[[Page Title|/Another/Page]]`)

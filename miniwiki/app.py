@@ -1,12 +1,14 @@
+from datetime import datetime
 from importlib import import_module
 from os import path
 from time import time
 
 from flask import abort, Flask, redirect, render_template, request, url_for
+from hashids import Hashids
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import HTTPException
 
-from miniwiki.models import db, Page
+from miniwiki.models import db, Page, PageLog
 from miniwiki.util import get_path_and_name, split_path_locations
 
 
@@ -19,6 +21,9 @@ def make_app(config):
 
     # Trigger any custom app initialization
     config['init_app'](app)
+
+    hashids = Hashids(salt=config['secret_key'], min_length=6)
+    setattr(PageLog, 'hashids', hashids)
 
     # Templates
     #
@@ -66,6 +71,7 @@ def make_app(config):
     cache_module = import_module(cache_module)
     cache_cls = getattr(cache_module, cache_cls)
     setattr(Page, 'cache', cache_cls(config))
+    setattr(PageLog, 'cache', cache_cls(config))
 
     # Wiki view
     #
@@ -82,14 +88,21 @@ def make_app(config):
         page_path, page_name = get_path_and_name(path_and_name)
         page_location = path.join(page_path, page_name)
 
-        page = Page.query.get((page_path, page_name))
+        if request.args.get('history'):
+            page = PageLog.query.get(hashids.decode(request.args['history']))
+        else:
+            page = Page.query.get((page_path, page_name))
+
         status = 200 if page else 404
 
         if request.method == 'GET':
             template = 'page.html'
             is_edit = request.args.get('edit') == ''
+            is_history = request.args.get('history') == ''
 
-            if is_edit:
+            if is_history:
+                template = 'page_history.html'
+            elif is_edit:
                 if auth.is_logged_in():
                     template = 'edit_page.html'
                 else:
@@ -101,7 +114,7 @@ def make_app(config):
                 'page_content': None,
             }
 
-            if page:
+            if page and not (is_edit or is_history):
                 try:
                     (toc, html), cached = page.render_toc_and_content(
                         do_redirects=not is_edit,
@@ -117,6 +130,9 @@ def make_app(config):
                 page_vars['page_toc'] = toc
                 page_vars['page_content'] = html
                 page_vars['page_sidebar'] = page.render_sidebar()
+
+            if is_history:
+                page_vars['page_logs'] = PageLog.query.filter_by(path=page_path, name=page_name)
 
             return render_template(
                 template,
@@ -151,6 +167,7 @@ def make_app(config):
             description=request.form['description'],
             keywords=request.form['keywords'],
             sidebar_toc=request.form.get('sidebar_toc') == 'on',
+            datetime_updated_utc=datetime.utcnow(),
         )
 
         db.session.add(page)

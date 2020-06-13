@@ -1,5 +1,6 @@
 import re
 
+from datetime import datetime
 from os import path
 
 from flask import render_template, url_for
@@ -18,9 +19,6 @@ db = SQLAlchemy()
 class PageMixin(object):
     __tablename__ = 'page'
 
-    path = db.Column(db.String(300, collation='NOCASE'), primary_key=True)
-    name = db.Column(db.String(300, collation='NOCASE'), primary_key=True)
-
     title = db.Column(db.String(300), nullable=False)
     content = db.Column(db.Text, nullable=False)
 
@@ -29,6 +27,8 @@ class PageMixin(object):
 
     description = db.Column(db.String(300), nullable=True)
     keywords = db.Column(db.String(300), nullable=True)
+
+    datetime_updated_utc = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     class PageRedirectError(Exception):
         def __init__(self, location):
@@ -138,14 +138,25 @@ class Page(db.Model, PageMixin):
 
     def create_page_log(self):
         page_log = PageLog()
-        page_log.update(self.to_dict())
+        page_log.update(**self.to_dict())
         return page_log
 
 
 class PageLog(db.Model, PageMixin):
     __tablename__ = 'page_log'
 
+    is_historical = True
+
     id = db.Column(db.Integer, primary_key=True)
 
     path = db.Column(db.String(300, collation='NOCASE'), index=True)
     name = db.Column(db.String(300, collation='NOCASE'), index=True)
+
+    @property
+    def hashed_id(self):
+        return self.hashids.encode(self.id)
+
+    def update(self, *args, **kwargs):
+        if self.id:
+            raise Exception('PageLog objects are immutable once created.')
+        super(PageLog, self).update(*args, **kwargs)

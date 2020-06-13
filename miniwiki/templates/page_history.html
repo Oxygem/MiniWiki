@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header_links %}
+    <a href="{{ page_url }}">View Page</a>
+    {% if is_logged_in %}
+        <a href="{{ page_url }}?edit">Edit Page</a>
+        {% if logout_url %}
+            <a href="{{ logout_url }}">Logout</a>
+        {% endif %}
+    {% elif login_url %}
+        <a href="{{ login_url }}">Login</a>
+    {% endif %}
+{% endblock %}
+
+{% block location_links %}
+    {% for path, name in path_locations %}
+        <a href="{{ path }}">{{ name }}</a>
+    {% endfor %}
+{% endblock %}
+
+{% block contents %}
+    <section id="page">
+        <h1>History for: {% if page %}{{ page.title }}{% else %}{{ page_location }}{% endif %}</h1>
+        <ul>
+            {% for historical_page in page_logs %}
+                <li>{{ historical_page.title }} (<a href="{{ page_url }}?history={{ historical_page.hashed_id }}">{{ historical_page.hashed_id }}</a>) ({{ historical_page.datetime_updated_utc }})</li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}

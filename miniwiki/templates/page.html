@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header_links %}
+    <a href="{{ page_url }}?history">Page History</a>
     {% if is_logged_in %}
         <a href="{{ page_url }}?edit">Edit Page</a>
         {% if logout_url %}
@@ -20,7 +21,12 @@
 {% block contents %}
     <section id="page">
         {% if page %}
-            <h1>{{ page.title }}</h1>
+            <h1>
+                {% if page.is_historical %}
+                    Previous version ({{ page.hashed_id }}):
+                {% endif %}
+                {{ page.title }}
+            </h1>
             {% if sidebar or page.sidebar_toc %}
                 <div id="sidebar">
                     {% if page.sidebar_toc %}{{ page_toc|safe }}{% endif %}

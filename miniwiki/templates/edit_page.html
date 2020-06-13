@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header_links %}
+    <a href="{{ page_url }}?history">Page History</a>
     <a href="{{ page_url }}">View Page</a>
     {% if logout_url %}
         <a href="{{ logout_url }}">Logout</a>

@@ -36,4 +36,7 @@ def get_default_config():
         # Cache backend + settings
         'cache_backend': 'miniwiki.cache.NoCacheBackend',
         'cache_backend_settings': {},
+
+        # Optional custom app initialization callback
+        'init_app': lambda app: None,
     }

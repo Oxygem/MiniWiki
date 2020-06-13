@@ -17,6 +17,9 @@ def make_app(config):
     app.debug = config['debug']
     app.secret_key = config['secret_key']
 
+    # Trigger any custom app initialization
+    config['init_app'](app)
+
     # Templates
     #
 

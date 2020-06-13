@@ -28,7 +28,7 @@ MEMCACHE_REQUIRES = [
 
 if __name__ == '__main__':
     setup(
-        version='0.6',
+        version='0.6.1',
         name='MiniWiki',
         author='Nick, Oxygem',
         author_email='hello@oxygem.com',

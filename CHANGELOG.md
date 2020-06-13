@@ -1,3 +1,7 @@
+# v0.6.1
+
++ Fix data export, add missing `Page.to_dict` method
+
 # v0.6
 
 + Add `?uncached` option to view page with caching disabled

@@ -1,5 +1,9 @@
-# v0.6.1
+# v0.7
 
++ Add `?history` option to view page history
+    * Add `Page.datetime_updated_utc` column
+    * Make it possible to view a page at a given point in time
++ Add `init_app` config callback function
 + Fix data export, add missing `Page.to_dict` method
 
 # v0.6

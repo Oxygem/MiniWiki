@@ -119,6 +119,12 @@ class PageMixin(object):
 
         return re.sub(LINK_REGEX, make_link, html)
 
+    def to_dict(self):
+        return {
+            key: getattr(self, key)
+            for key in self.__table__.columns.keys()
+        }
+
 
 class Page(db.Model, PageMixin):
     __tablename__ = 'page'
@@ -131,14 +137,8 @@ class Page(db.Model, PageMixin):
         self.cache.delete(self.cache_key)
 
     def create_page_log(self):
-        columns = self.__table__.columns.keys()
-
         page_log = PageLog()
-        page_log.update(**{
-            key: getattr(self, key)
-            for key in columns
-        })
-
+        page_log.update(self.to_dict())
         return page_log
 
 

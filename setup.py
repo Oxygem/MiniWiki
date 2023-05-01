@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 INSTALL_REQUIRES = [
     'cheroot==8.3.0',
 
-    'flask==1.1.2',
+    'flask==2.3.2',
 
     'flask-sqlalchemy==2.4.3',
     'sqlalchemy==1.3.7',
